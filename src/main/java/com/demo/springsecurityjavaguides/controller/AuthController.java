@@ -2,6 +2,7 @@ package com.demo.springsecurityjavaguides.controller;
 
 import com.demo.springsecurityjavaguides.request.LoginRequest;
 import com.demo.springsecurityjavaguides.request.SignupRequest;
+import com.demo.springsecurityjavaguides.response.JwtAuthResponse;
 import com.demo.springsecurityjavaguides.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,14 +22,16 @@ public class AuthController {
 
     //login rest api
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        String authenticate = authService.login(loginRequest);
-        return ResponseEntity.ok(authenticate);
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginRequest loginRequest) {
+        String token = authService.login(loginRequest);
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setToken(token);
+        return ResponseEntity.ok(jwtAuthResponse);
     }
 
     //register rest api
     @PostMapping("/signup")
-    public ResponseEntity<String> login(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<String> signup(@RequestBody SignupRequest signupRequest) {
         String signup = authService.signup(signupRequest);
         return ResponseEntity.ok(signup);
     }
