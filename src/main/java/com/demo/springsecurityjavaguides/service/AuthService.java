@@ -6,6 +6,7 @@ import com.demo.springsecurityjavaguides.repository.RoleRepository;
 import com.demo.springsecurityjavaguides.repository.UserRepository;
 import com.demo.springsecurityjavaguides.request.LoginRequest;
 import com.demo.springsecurityjavaguides.request.SignupRequest;
+import com.demo.springsecurityjavaguides.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,15 +24,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AuthService(AuthenticationManager authenticationManager,
                        UserRepository userRepository,
                        RoleRepository roleRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     //login
@@ -40,8 +44,14 @@ public class AuthService {
                 loginRequest.getUsernameOrEmail(),
                 loginRequest.getPassword()
         ));
+
+        //generate token
+        String token = jwtTokenProvider.generateToken(authenticate);
+
+        //set authentication
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        return "authenticated";
+
+        return token;
     }
 
     //signup
